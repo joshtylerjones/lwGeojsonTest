@@ -1,261 +1,29 @@
 <!DOCTYPE html>
 <html>
-  <head>
-
+<head>
 <meta charset=utf-8 />
-<title>Pacific Salmon Status</title>
- 
-  <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
-  <link href='http://fonts.googleapis.com/css?family=Comfortaa:400,300' rel='stylesheet' type='text/css'/>
- <!-- <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-  <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>-->
-  <link href='/assets/css/style.css' rel='stylesheet'/>
-  <link href='//api.tiles.mapbox.com/mapbox.js/v1.6.0/mapbox.css' rel='stylesheet'/>
-  <script src='//api.tiles.mapbox.com/mapbox.js/v1.6.0/mapbox.js'></script>
-  <script src='/assets/js/leaflet.utfgrid.js'></script>
-  <script type="text/javascript" src="//maps.stamen.com/js/tile.stamen.js?v1.2.4"></script>
-  
-  <script src='/assets/js/map.js'></script>
-
-  </head>
-
+<title>Leaflet layers control</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.css' rel='stylesheet' />
+<style>
+  body { margin:0; padding:0; }
+  #map { position:absolute; top:0; bottom:0; width:100%; }
+</style>
+</head>
 <body>
-<div id="map"></div>
-<div id="content"></div>
-<div id="hover"></div>
-
-<div id="info_window" class="shadow">
-   <div id="info_title"></div>
-</div>
-
-<div id="info_window2" class="shadow2">
-  <div id="info_title2"></div>
-</div>
-
-<div id="header" class="shadow">
-  <div id="title" class="mainHeader">Pacific Salmon Status</div>
-  <div id="sub-titles" >BY Evolutionary Significant Unit  and Seasonal Run Distributions</div>
-  <!-- <div id="sub-titles" class="subHeader">Click on Habitat Polygons</br> Hover over Salmon Barriers</div> -->
-</div>
-
-<div id="salmonLegend"></div>
-
-<div class-'title'>Salmon Status by Evolutionary Significant Unit </br> and Seasonal Run Distribution</div>
-
-
+<div id='map'></div>
 
 <script>
-
-var map = L.map('map').setView([43.492783, -119.4598], 6);
-map.options.maxZoom = 12;
-map.options.minZoom =5;
-
-//var satellite = new L.TileLayer("//otile1.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png");
-var stamenTerrain = new L.StamenTileLayer("terrain-background");  //replace with "terrain"
-
-
-/* Create Infoboxes from HTML Info Windows */
-
-var infoBox = document.getElementById('info_window'),
-    infoBox2 = document.getElementById('info_window2');
-    salmonLegendJS = document.getElementById('salmonLegend')
-
-
-/* Chinook Fall & UTF GRID*/
-
-var chinookFall = new L.tileLayer('//gis-01.ridolfi.com/tiles/chinookFall4/{z}/{x}/{y}.png');
-
-var utfGridChinookFall = new L.UtfGrid('//gis-01.ridolfi.com/tiles/chinookFall4/{z}/{x}/{y}.grid.json', {
-  useJsonP: false
-    });
-
-var chinookFallCombo = new L.layerGroup([utfGridChinookFall,chinookFall]);
-
-utfGridChinookFall.on('mouseover', function (e) {
-var infoBox = document.getElementById('info_window')
-infoBox.innerHTML += "<h2>" + "Population:" +  " " + "</h2>" + e.data.DPS + String.fromCharCode(13);
-infoBox.innerHTML += String.fromCharCode(13);  
-infoBox.innerHTML += "<h2>" + "Status: " + "</h2>" + e.data.Status + String.fromCharCode(13);
-infoBox.innerHTML += String.fromCharCode(13); 
-infoBox.innerHTML += "<h2>" + "Access Condition: " + "</h2>" + e.data.Class + String.fromCharCode(13);
-infoBox.innerHTML +=  String.fromCharCode(13);
-infoBox.style.display = "block";
-  });
-
-utfGridChinookFall.on('mouseout', function (e) {
-var infoBox = document.getElementById('info_window')
-infoBox.style.display = "none";
-infoBox.innerHTML = ""
-  });
-
-
-/* Chinook Non-Seasonal & UTF GRID */
-
-var chinookNonSeasonal = new L.tileLayer('//gis-01.ridolfi.com/tiles/chinookNonSeasonal/{z}/{x}/{y}.png');
-
-var utfGridChinookNonSeasonal = new L.UtfGrid('//gis-01.ridolfi.com/tiles/chinookNonSeasonal/{z}/{x}/{y}.grid.json', {
-  useJsonP: false
-    });
-
-var chinookNonSeasonalCombo = new L.layerGroup([utfGridChinookNonSeasonal,chinookNonSeasonal]);
-
-utfGridChinookNonSeasonal.on('mouseover', function (e) {
-var infoBox = document.getElementById('info_window')
-infoBox.innerHTML += "<h2>" + "Population:" +  " " + "</h2>" + e.data.DPS + String.fromCharCode(13);
-infoBox.innerHTML += String.fromCharCode(13);  
-infoBox.innerHTML += "<h2>" + "Status: " + "</h2>" + e.data.Status + String.fromCharCode(13);
-infoBox.innerHTML += String.fromCharCode(13); 
-infoBox.innerHTML += "<h2>" + "Access Condition: " + "</h2>" + e.data.Class + String.fromCharCode(13);
-infoBox.innerHTML +=  String.fromCharCode(13);
-infoBox.style.display = "block";
-  });
-
-utfGridChinookNonSeasonal.on('mouseout', function (e) {
-var infoBox = document.getElementById('info_window')
-infoBox.style.display = "none";
-infoBox.innerHTML = ""
-  });
-
-
-/* Chinook Winter & UTF GRID */ 
-
-var chinookWinter = new L.tileLayer('//gis-01.ridolfi.com/tiles/chinookWinter2/{z}/{x}/{y}.png');
-
-var utfGridChinookWinter = new L.UtfGrid('//gis-01.ridolfi.com/tiles/chinookWinter2/{z}/{x}/{y}.grid.json', {
-  useJsonP: false
-    });
-
-var chinookWinterCombo = new L.layerGroup([utfGridChinookWinter,chinookWinter]);
-
-utfGridChinookWinter.on('mouseover', function (e) {
-var infoBox = document.getElementById('info_window')
-infoBox.innerHTML += "<h2>" + "Population:" +  " " + "</h2>" + e.data.DPS + String.fromCharCode(13);
-infoBox.innerHTML += String.fromCharCode(13);  
-infoBox.innerHTML += "<h2>" + "Status: " + "</h2>" + e.data.Status + String.fromCharCode(13);
-infoBox.innerHTML += String.fromCharCode(13); 
-infoBox.innerHTML += "<h2>" + "Access Condition: " + "</h2>" + e.data.Class + String.fromCharCode(13);
-infoBox.innerHTML +=  String.fromCharCode(13);
-infoBox.style.display = "block";
-  });
-
-utfGridChinookWinter.on('mouseout', function (e) {
-var infoBox = document.getElementById('info_window')
-infoBox.style.display = "none";
-infoBox.innerHTML = ""
-  });
-
-
-
-/* Chinook Spring & UTF GRID */
-
-var chinookSpring = new L.tileLayer('//gis-01.ridolfi.com/tiles/chinookSpring/{z}/{x}/{y}.png');
-
-var utfGridChinookSpring = new L.UtfGrid('//gis-01.ridolfi.com/tiles/chinookSpring/{z}/{x}/{y}.grid.json',{
-  useJsonP: false
-    });
-
-var chinookSpringCombo = new L.layerGroup([utfGridChinookSpring,chinookSpring]);
-
-utfGridChinookSpring.on('mouseover', function (e) {
-infoBox = document.getElementById('info_window')
-
-infoBox.innerHTML += "<h2>" + "Population:" +  " " + "</h2>" + e.data.DPS + String.fromCharCode(13);
-infoBox.innerHTML += String.fromCharCode(13);  
-infoBox.innerHTML += "<h2>" + "Status: " + "</h2>" + e.data.Status + String.fromCharCode(13);
-infoBox.innerHTML += String.fromCharCode(13); 
-infoBox.innerHTML += "<h2>" + "Access Condition: " + "</h2>" + e.data.Class + String.fromCharCode(13);
-infoBox.innerHTML +=  String.fromCharCode(13);
-
-infoBox.style.display = "block";
-  });
-
-utfGridChinookSpring.on('mouseout', function (e) {
-infoBox = document.getElementById('info_window')
-infoBox.style.display = "none";
-infoBox.innerHTML = ""
-  });
-
-
-
-
-/* Salmon Barriers & UTFGRID */
-
-var salmonBarriers = new L.tileLayer('//gis-01.ridolfi.com/tiles/US_Barriers1/{z}/{x}/{y}.png');
-
-var utfGridSalmonBarriers = new L.UtfGrid('//gis-01.ridolfi.com/tiles/US_Barriers1/{z}/{x}/{y}.grid.json', {
-  useJsonP: false
-    });
-
-var barriers = L.layerGroup([utfGridSalmonBarriers, salmonBarriers]);
-
-utfGridSalmonBarriers.on('mouseover', function (e) {
-var infoBox2 = document.getElementById('info_window2')
-infoBox2.innerHTML += "<h3>" + "Barrier Type:" +  " " + "</h3>" + e.data.BarrierT_1 + String.fromCharCode(13);
-infoBox2.innerHTML += String.fromCharCode(13);  
-infoBox2.innerHTML += "<h3>" + "Fishway Type: " + "</h3>" + e.data.FishwayT_1 + String.fromCharCode(13);
-infoBox2.innerHTML += String.fromCharCode(13); 
-infoBox2.innerHTML += "<h3>" + "Location Name: " + "</h3>" + e.data.Name + String.fromCharCode(13);
-infoBox2.innerHTML +=  String.fromCharCode(13);
-infoBox2.style.display = "block";
-  });
-
-
-utfGridSalmonBarriers.on('mousemove', function (e) {
-    console.log('move: ' + e.data.Status);
-  });
-
-utfGridSalmonBarriers.on('mouseout', function (e) {
-var infoBox2 = document.getElementById('info_window2')
-infoBox2.style.display = "none";
-infoBox2.innerHTML = "";
-// salmonLegendJS.style.display = "none";
-  });
-
-// salmonLegendJS.style.display = "block";
-// salmonLegendJS.style.display = "none";
-// salmonLegendJS.innerHTML = "";
-
-
-
-/* Layer Switcher */
+var map = L.map('map').setView([38.8922,-77.0348], 14);
 
 L.control.layers({
-  'Chinook Non Seasonal': chinookNonSeasonalCombo.addTo(map),
-  'Chinook Fall': chinookFallCombo,
-  'Chinook Spring': chinookSpringCombo,
-  'Chinook Winter': chinookWinterCombo,
+    'Base Map': L.mapbox.tileLayer('examples.map-i87786ca').addTo(map),
+    'Grey Map': L.mapbox.tileLayer('examples.map-20v6611k')
 }, {
-  'Salmon Barriers': barriers,
-  }).addTo(map);
-
-
-/* Add Necessary Layers */
-
-// map.addLayer(satellite);
-map.addLayer(stamenTerrain);
-// map.addLayer(chinookFall);
-//map.addLayer(chinookNonSeasonal);
-//map.addLayer(utfGridChinookNonSeasonal);
-// map.addLayer(salmonBarriers);
-// map.addLayer(utfGridSalmonBarriers);
-// map.addLayer(chinookWinterCombo);
-// map.addLayer(chinookSpringCombo);
-// map.addLayer(chinookNonSeasonalCombo);
-
-
-/* Console Log Tests */
-
-// console.log(utfGridChinookNonSeasonal);
-// console.log(chinookNonSeasonalCombo);
-// console.log(salmonBarriers);
-// console.log(utfGridSalmonBarriers);
-// console.log(chinookSpring);
-// console.log(chinookWinter);
-// console.log(chinookSpring);
-
-
+    'Bike Stations': L.mapbox.tileLayer('examples.bike-locations'),
+    'Bike Lanes': L.mapbox.tileLayer('examples.bike-lanes')
+}).addTo(map);
 </script>
-
-
-  </body>
+</body>
 </html>
